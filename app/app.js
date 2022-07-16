@@ -7,7 +7,11 @@ import mongoose from 'mongoose';
 import {join, dirname} from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
+
+// Route files
+
 import pageRoutes from './routes/pages.js';
+import apiRoutes from './routes/api.js';
 
 
 var app = express(),
@@ -26,7 +30,7 @@ app.set('view engine','ejs');
 // Routes
 
 app.use(pageRoutes);
-
+app.use(apiRoutes);
 
 
 // Server & Database
