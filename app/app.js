@@ -32,6 +32,9 @@ app.set('view engine','ejs');
 app.use(pageRoutes);
 app.use(apiRoutes);
 
+// Public files
+
+app.use(express.static(join(__dirname,'public')));
 
 // Server & Database
 

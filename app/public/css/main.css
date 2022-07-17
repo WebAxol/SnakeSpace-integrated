@@ -1,0 +1,15 @@
+*{
+    color: white;
+}
+
+body{
+    background-color: rgba(0,0,0,0.98);
+}
+
+.darkInput{
+    background-color: rgba(0,0,0,0);
+}
+
+.darkInput :focus {
+    background-color: rgba(0,0,0,0);
+}

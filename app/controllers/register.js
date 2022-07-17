@@ -11,6 +11,7 @@ var RegisterController = {
         let params = req.body;
 
         // TODO : validate and check parameters before storing them on the DB
+        // TODO : encrypt password with secure hash library
         
         let newUser = new User();
             newUser.username = params.username;
@@ -31,12 +32,15 @@ var RegisterController = {
     },
 
     validatePassword : (password,confirmation) => {
-        // TODO : Complete this function - It must check that...
+        // TODO : Complete this function; It must check that...
         /*
             - both the password and the confirmation variables are equal
             - the password is atleast 10 characters long
             - the password is no more than 256 characters long
         */
+
+        
+
     },
 
     // TODO: Complete functions checkEmail & checkName - They must check if the name and email are already registered respectively

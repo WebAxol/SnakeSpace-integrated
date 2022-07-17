@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html>
-    <head></head>
+    <head>
+        <%- include('partials/head.ejs') %>
+    </head>
     <body>
-        <h1> Register Webpage </h1>
 
-        <form method="post" action="api/register">
+        <main class="container">
+            <section class="row mt-5">
+                <div class="col-md-8 mx-auto">
+                    <h1> <i class="fa fa-solid fa-user text-danger"></i> Register Webpage </h1>
+                    <hr>
+                </div>
+            </section>
+            <section class="row mt-3">
+                <div class="col-md-8 mx-auto">
+                    
+                    <form  class="border border-danger p-5" method="post" action="api/register">
 
-            <!--TODO : give style and structure to register form-->
+                        <!--TODO : give style and structure to register form-->
 
-            <label for="username">Username</label>
-            <input type="text" name="username" placeholder="Username">
+                        <label for="username">Username</label>
+                        <input class="d-block mb-3 form-control darkInput" type="text" name="username" placeholder="Username" required>
 
-            <label for="email">Email</label>
-            <input type="email" name="email" placeholder="Email">
+                        <label for="email">Email</label>
+                        <input class="d-block mb-3 form-control darkInput" type="email" name="email" placeholder="Email" required>
 
-            <label for="password">Password</label>
-            <input type="password" name="password" placeholder="Password">
+                        <label for="password">Password</label>
+                        <input class="d-block mb-3 form-control darkInput" type="password" name="password" placeholder="Password" required>
 
-            <label for="">Confirm password</label>
-            <input type="password" name="c-password" placeholder="Confirm password">
+                        <label for="">Confirm password</label>
+                        <input class="d-block mb-5 form-control darkInput" type="password" name="c-password" placeholder="Confirm password" required>
 
-            <button type="submit">Register</button>
+                        <button class="btn btn-danger btn-block" type="submit">Register</button>
 
-        </form>
-
+                    </form>
+                </div>
+            </section>
+        </main>
     </body>
 </html>
