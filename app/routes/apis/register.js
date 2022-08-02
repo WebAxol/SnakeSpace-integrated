@@ -9,7 +9,7 @@ import RegisterController from '../../controllers/register.js';
 
 // Routes
 
-router.post('/', (req,res) => { RegisterController.register(req,res); });
+router.post('/', (req,res) => { RegisterController.preRegister(req,res); });
 
 
 export default router;

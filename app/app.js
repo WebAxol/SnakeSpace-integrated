@@ -51,6 +51,6 @@ mongoose.connect('mongodb://localhost:27017/reginode')
         console.log('Connection with database was successful');
 
         app.listen(3800, () => {
-            console.log('The server is listeningstring in port ',3800)
+            console.log('The server is listening in port ',3800)
         })
     }).catch(err => console.log(err));

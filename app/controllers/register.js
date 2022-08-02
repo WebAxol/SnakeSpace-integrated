@@ -7,85 +7,76 @@ import User from '../models/user.js';
     are used by the class but don´t directly return any information to a client. 
 */
 
+// TODO : Further test register API
+
+
 class RegisterController {
 
-    register(req,res){
+    preRegister(req,res){
 
         // TODO : clean data before processing it
-        
-        let params = req.body;
-
-          // TODO : validate and check parameters before storing them on the DB
 
         this._checkUserParamsInDB(req,(available) => {
             try{
-
-                console.log(available);
-
                 if(available.error){
-                    res.status(500).send({
-                        message : 'There was a mistake'
+                    return res.status(500).send({
+                        message : 'Error, something went wrong'
                     });
                 }
-                else if(available === true){
-                    res.status(200).send({
-                        message : 'The data is valid'
-                    });
-                }else{
-                    res.status(500).send({
+
+                if(!available){
+                    return res.status(500).send({
                         message : 'The data is already registered'
                     });
                 }
+
+                // username and email valid and available - time to register...
+
+                this.register(req,res);
+
+
             }catch(err){
-                console.log('Error2');
+                console.log('Error', err);
+
+                return res.status(500).send({
+                    message : 'Error, something went wrong'
+                });
             }
         });
-
-
-        //let username_exists = this.checkUsernameInDB(params.username);
-
-        return;
-
-        if(typeof email_exists == 'Object'){
-            return this.sendMessage(email_exists,res);
-        }
-
-        if(email_exists){
-            return this.sendMessage({
-                status : 404,
-                content : 'The email or username have already been registered'
-            },res);
-        }
-
-          // TODO : encrypt password with secure hash library
-
-        this._register(params);
     }
 
-    _register(){
-
-        let newUser = new User();
-            newUser.username = params.username;validatePassword
-            newUser.email = params.email;
-            newUser.password = params.password;
+    register(req,res){
+        try{
+            let newUser = new User();
+                newUser.username =  req.body.username;
+                newUser.email    =  req.body.email;
+                newUser.password =  req.body.password;
 
             newUser.save((err, userSaved) => {
                 if(err){ 
-                    return { 
-                        status : 500, 
-                        content : 'Sorry, there has been an error while registering you'
-                    };
+                    return res.status(500).send({ 
+                        message : 'Sorry, there has been an error while registering you'
+                    });
                 } 
                 if(!userSaved){
-                    return { 
-                        status : 404, 
-                        content : 'Sorry, we could not register your user' 
-                    };
+                    return res.status(404).send({ 
+                        message : 'Sorry, we could not register your user' 
+                    });
                 }
 
                 console.log(userSaved);
-                return { status : 200, content : userSaved};
+                return res.status(200).send({ 
+                    message : userSaved}
+                );
             });
+        }catch(err){
+
+            console.log('Error', err);
+
+            return res.status(500).send({
+                message : 'Error, something went wrong'
+            });
+        }
     }
 
     validatePassword(password,confirmation){
@@ -100,36 +91,24 @@ class RegisterController {
     // Checks if both the username and email aren´t already registered in the DB
 
     _checkUserParamsInDB(req,callback){
+
         try{
-        this._isEmailInDB(req.body.email, (user) => {
+            this._isEmailInDB(req.body.email, (user) => {
 
-            if(user.error){ 
-                callback(user);
-            }
+                if(user.error)      return callback(user);
+                if(user != false)   return callback(false);
+            
+                this._isUsernameInDB(req.body.username, (user) => {
 
-            if(user != false && !user.error){
-                //console.log('email already registered');
-                callback(false);
-            }
-
-            this._isUsernameInDB(req.body.username, (user) => {
-
-                if(user.error){
-                    callback(user);
-                }
-
-                if(user != false && user != [] && !user.error){
-                    //console.log('usename already registered');
-                    callback(false);
-                }
-                else{
-                    console.log(user);
-                    callback(true);
-                }
+                    if(user.error)      return callback(user);
+                    if(user != false)   return callback(false);
+                
+                    return callback(true);
+                });
             });
-        });
         }catch(err){
             console.log('Error');
+            return callback({ error : 'Error, something went wrong' });
         }
     }
 
@@ -151,22 +130,20 @@ class RegisterController {
     _isEmailInDB(email,callback){
 
         if(!email || email == ''){
-            callback({ error : 'No email passed as parameter' });
+            return callback({ error : 'No email passed as parameter' });
         }
 
         try{
             User.find({ 'email' : email }).then((email) => {
                 if(!email){
-                    callback({ 
-                        error : 'There was a mistake'
-                    });
+                    return callback({ error : 'Error, something went wrong' });
                 }
 
-                callback(email);
+                return callback(email);
             });
         }catch(err){
             console.log(err);
-            return { status : 500 , message : 'Something went wrong' };
+            return callback({ error : 'Error, something went wrong' })
         }
     }
 
@@ -189,23 +166,22 @@ class RegisterController {
 
     _isUsernameInDB(username,callback){
 
+
         if(!username || username == ''){
-            callback({ error : 'No username passed as parameter' });
+            return callback({ error : 'No username passed as parameter', username : username });
         }
 
         try{
             User.find({ 'username' :  username}).then((user) => {
                 if(!user){
-                    callback({ 
-                        error : 'There was a mistake'
-                    });
+                    return callback({ error : 'There was a mistake' });
                 }
 
-                callback(user);
+                return callback(user);
             });
         }catch(err){
             console.log(err);
-            return { status : 500 , message : 'Something went wrong' };
+            return callback({ error : 'Error, something went wrong' })
         }
     }
 }
