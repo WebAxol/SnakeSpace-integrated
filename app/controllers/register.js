@@ -114,7 +114,8 @@ class RegisterController {
 
 
     isEmailInDB(req,res){
-        this._isEmailInDB(req.body.email, (data) => {
+
+        this._isEmailInDB(req.query.email, (data) => {
             if(data.error){
                 return res.status(500).send({
                     message : 'Error'
@@ -139,8 +140,8 @@ class RegisterController {
                     return callback({ error : 'Error, something went wrong' });
                 }
 
-                return callback(email);
-            });
+                return callback(!(email == false));
+            });true
         }catch(err){
             console.log(err);
             return callback({ error : 'Error, something went wrong' })
@@ -151,7 +152,7 @@ class RegisterController {
 
     isUsernameInDB(req,res){
 
-        this._isUsernameInDB(req.body.username, (data) => {
+        this._isUsernameInDB(req.query.username, (data) => {
             if(data.error){
                 return res.status(500).send({
                     message : 'Error'
@@ -177,7 +178,7 @@ class RegisterController {
                     return callback({ error : 'There was a mistake' });
                 }
 
-                return callback(user);
+                return callback(!(user == false));
             });
         }catch(err){
             console.log(err);
