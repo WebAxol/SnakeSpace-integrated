@@ -13,3 +13,8 @@ body{
 .darkInput :focus {
     background-color: rgba(0,0,0,0);
 }
+
+.error-box{
+    background-color: rgba(255,50,50,0.3);
+    display: none;
+}

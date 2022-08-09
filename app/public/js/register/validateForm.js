@@ -2,9 +2,23 @@
 
 const form = document.querySelector('form');
 var request_queue = []; // Stores requests to server so that they can be processed independently one by one
-
+var usernameAvailable = false;
+var emailAvailable    = false;
 
 // Functions
+
+function displayErrorBox(field,error){
+    let errorBox = document.getElementById( `${field}-errorbox`);
+        errorBox.style.display = 'block';
+        errorBox.innerHTML = error;
+}
+
+function hideErrorBox(field){
+    let errorBox = document.getElementById( `${field}-errorbox`);
+        errorBox.innerHTML = '';    
+        errorBox.style.display = 'none';
+}
+
 
 function checkPassword(){
     var password = form.password.value,
@@ -12,19 +26,25 @@ function checkPassword(){
 
     // TODO : create error boxes to show error messages on UI, then remove console.log's
     
+    if(password == '' || confirm == ''){
+        return;
+    }
+
     if(password  !== confirm){
-        console.log('The passwords are not identical');
+        console.log('unequal');
+        displayErrorBox('password','The passwords are not identical');
         return false;
     }
     if(password.length < 10){
-        console.log('The password must contain a minimum of 10 characters');
+        displayErrorBox('password','The password must contain a minimum of 10 characters');
         return false;
     }
     if(password.length > 256){
-        console.log('The password must not exceed 256 characters');
+        displayErrorBox('password','The password must not exceed 256 characters');
         return false;
     }
 
+    hideErrorBox('password');
     return true;
 }
 
@@ -35,23 +55,31 @@ function isEmailAvailable(){
     if(email == ''){
         return;
     }
+    try{
+        fetch(`/api/register/email?email=${email}`, {
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            method : 'get',
 
-    fetch(`/api/register/email?email=${email}`, {
-        headers : {
-            'Content-type' : 'application/json'
-        },
-        method : 'get',
+        }).then((data) => {
+            return data.json();
 
-    }).then((data) => {
-        return data.json();
+        }).then((available) => {
+            if(available.message){
+                displayErrorBox('email','The email is not available');
+                emailAvailable = false;
 
-    }).then((available) => {
-        if(available.message){
-            console.log('The email has already been taken');
-        }
-    })
+            }else{
+                hideErrorBox('email');
+                emailAvailable = true;
+
+            }
+        })
+    }catch(err){
+        setTimeout(isEmailAvailable,2000)
+    }
 }
-
 
 function isUsernameAvailable(){
 
@@ -60,21 +88,29 @@ function isUsernameAvailable(){
     if(username == ''){
         return;
     }
+    try{
+        fetch(`/api/register/username?username=${username}`, {
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            method : 'get',
 
-    fetch(`/api/register/username?username=${username}`, {
-        headers : {
-            'Content-type' : 'application/json'
-        },
-        method : 'get',
+        }).then((data) => {
+            return data.json();
 
-    }).then((data) => {
-        return data.json();
-
-    }).then((available) => {
-        if(available.message){
-            console.log('The username has already been taken');
-        }
-    })
+        }).then((available) => {
+            if(available.message){
+                displayErrorBox('name','The name is not available');
+                usernameAvailable = false;
+            }
+            else{
+                hideErrorBox('name');
+                usernameAvailable = true;
+            }
+        })
+    }catch(err){
+        setTimeout(isUsernameAvailable,2000)
+    }
 }
 
 
@@ -85,15 +121,31 @@ function checkForm(e){
 
     if (!checkPassword()) return; 
     
-    isUsernameAvailable();
-    isEmailAvailable();
+    if(usernameAvailable === true && emailAvailable === true){
+        form.submit();
+    }
+
 }
 
 // EVENTS
 
 form.addEventListener('submit', checkForm);
-form.username.addEventListener('focusout', isUsernameAvailable);
-form.email.addEventListener('focusout', isEmailAvailable);
+
+form.addEventListener('focusout',(e) => {
+    
+    let input = e.target.name;
+
+    switch(input){
+        case 'username' : isUsernameAvailable();
+        break;
+        case 'email' : isEmailAvailable();
+        break;
+        case 'password' : checkPassword();
+        break;
+        case 'confirmPassword' : checkPassword();
+    }
+
+});
 
 
 
