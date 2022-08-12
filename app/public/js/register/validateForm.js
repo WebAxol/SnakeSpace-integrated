@@ -22,7 +22,7 @@ function hideErrorBox(field){
 
 function checkPassword(){
     var password = form.password.value,
-        confirm  = form.confirmPassword.value; 
+        confirm  = form.confirmPassword.valuentitye; 
 
     // TODO : create error boxes to show error messages on UI, then remove console.log's
     

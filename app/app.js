@@ -11,14 +11,23 @@ import bodyParser from 'body-parser';
 
 // Route files
 
-import pageRoutes from './routes/pages.js';
-import registerAPI from './routes/apis/register.js';
+import pageRoutes   from './routes/pages.js';
+import registerAPI  from './routes/apis/register.js';
+import loginAPI     from './routes/apis/login.js';
+
 
 
 var app = express(),
     __dirname = dirname(fileURLToPath(import.meta.url));
 
 /* --  Middlewares  --*/
+
+app.use(express_session({
+    secret : 'secret',
+    cookies : {},
+    resave : false,
+    saveUninitialized : false
+}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
@@ -37,6 +46,8 @@ app.set('view engine','ejstrings');
 
 app.use(pageRoutes);
 app.use('/api/register',registerAPI);
+app.use('/api/login'   , loginAPI);
+
 
 // Public files
 
