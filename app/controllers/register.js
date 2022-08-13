@@ -1,6 +1,6 @@
 'use strict'
 import User from '../models/user.js';
-
+import hash from '../utils/encrypt.js'
 
 /*
     HINT : all methods starting with an underscore "_" 
@@ -12,15 +12,17 @@ import User from '../models/user.js';
 
 class RegisterController {
 
+
+
     preRegister(req,res){
 
         // TODO : clean data before processing it
 
-        this._checkUserParamsInDB(req,(available) => {
+        this._checkUserParamsInDB(req.body,(available) => {
             try{
                 if(available.error){
                     return res.status(500).send({
-                        message : 'Error, something went wrong'
+                        error : available.error
                     });
                 }
 
@@ -30,9 +32,18 @@ class RegisterController {
                     });
                 }
 
-                // username and email valid and available - time to register...
 
-                this.register(req,res);
+                this.validatePassword(req.body.password,req.body.confirm).then((validPassword) => {
+
+                    if(validPassword){
+                        return this.register(req,res);
+                    }
+
+                    return res.status(400).send({
+                        error : 'The password is not valid'
+                    });
+
+                })
 
 
             }catch(err){
@@ -52,6 +63,7 @@ class RegisterController {
                 newUser.email    =  req.body.email;
                 newUser.password =  req.body.password;
 
+            
             newUser.save((err, userSaved) => {
                 if(err){ 
                     return res.status(500).send({ 
@@ -79,26 +91,35 @@ class RegisterController {
         }
     }
 
-    validatePassword(password,confirmation){
-        // TODO : Complete this function; It must check that...
-        /*
-            - both the password and the confirmation variables are equal
-            - the password is atleast 10 characters long
-            - the password is no more than 256 characters long
-        */
+    async validatePassword(password,confirmation){
+
+        if(!password || password == '' || !confirmation || confirmation == ''){
+            return false;
+        }
+        if(!password !== confirmation){
+            return false;
+        }
+        if(password.length < 10 || password.length > 250){
+            return false;
+        }
+
+        genHash(password).then((hashed) => {
+            console.log(hashed);
+            return res.body.password = hashed;
+        })
     }
 
     // Checks if both the username and email aren´t already registered in the DB
 
-    _checkUserParamsInDB(req,callback){
+    _checkUserParamsInDB(body,callback){
 
         try{
-            this._isEmailInDB(req.body.email, (user) => {
+            this._isEmailInDB(body.email, (user) => {
 
                 if(user.error)      return callback(user);
                 if(user != false)   return callback(false);
             
-                this._isUsernameInDB(req.body.username, (user) => {
+                this._isUsernameInDB(body.username, (user) => {
 
                     if(user.error)      return callback(user);
                     if(user != false)   return callback(false);

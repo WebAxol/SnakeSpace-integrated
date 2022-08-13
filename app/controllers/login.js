@@ -1,5 +1,6 @@
 import User from '../models/user.js';
 
+
 class LoginController {
 
     login(req,res){
@@ -10,26 +11,19 @@ class LoginController {
         let password = req.query.password;
 
         if(!email || !password){
-            return res.status(400).send({
-                error : 'No email or password passed'
-            });
+            return res.status(400).send({error : 'No email or password passed'});
         }
 
         try{
-            User.findOne({
-                'email' : email, 
-                'password' : password
-            }).then( user  => {
+            User.findOne({ 'email' : email, 'password' : password})
+                .then( user  => {
                 
                 if(user == null){
-                    return res.status(404).send({
-                        error : 'Incorrect email or password'
-                    });
+                    return res.status(404).send({error : 'Incorrect email or password'});
                 }
 
-                console.log(user);
                 req.session.username = user.username;
-                req.session.email    = user.email;
+                req.session.email = user.email;
 
 
                 return res.status(200).send({ user : user });
