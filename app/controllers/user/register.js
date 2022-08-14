@@ -1,6 +1,7 @@
 'use strict'
-import User from '../models/user.js';
-import hash from '../utils/encrypt.js'
+import User from '../../models/user.js';
+import hash from '../../utils/encrypt.js'
+import isRegistered from './isRegistered.js';
 
 /*
     HINT : all methods starting with an underscore "_" 
@@ -12,13 +13,12 @@ import hash from '../utils/encrypt.js'
 
 class RegisterUser{
 
-
     preRegister(req,res){
 
         // TODO : clean data before processing it
+        try{
+            this._checkUserParamsInDB(req.body,(available) => {
 
-        this._checkUserParamsInDB(req.body,(available) => {
-            try{
                 if(available.error){
                     return res.status(500).send({
                         error : available.error
@@ -26,33 +26,40 @@ class RegisterUser{
                 }
 
                 if(!available){
-                    return res.status(500).send({
+                    return res.status(400).send({
                         message : 'The data is already registered'
                     });
                 }
 
-
                 this.validatePassword(req.body.password,req.body.confirm).then((validPassword) => {
 
+                    return res.status(500).send({
+                        message : validPassword
+                    });
+
+                    if(validPassword.error){
+                        return res.status(500).send({
+                            error : 'Error, something went wrong'
+                        });
+                    }
+
                     if(validPassword){
+                        req.body.password = validPassword;
                         return this.register(req,res);
                     }
 
                     return res.status(400).send({
                         error : 'The password is not valid'
                     });
-
                 })
+            })
+        }catch(err){
+            console.log('Error', err);
 
-
-            }catch(err){
-                console.log('Error', err);
-
-                return res.status(500).send({
-                    message : 'Error, something went wrong'
-                });
-            }
-        });
+            return res.status(500).send({
+                message : 'Error, something went wrong'
+            });
+        }
     }
 
     register(req,res){
@@ -95,17 +102,17 @@ class RegisterUser{
         if(!password || password == '' || !confirmation || confirmation == ''){
             return false;
         }
-        if(!password !== confirmation){
+        if(password !== confirmation){
             return false;
         }
         if(password.length < 10 || password.length > 250){
             return false;
         }
 
-        genHash(password).then((hashed) => {
+        await hash(password).then((hashed) => {
             console.log(hashed);
-            return res.body.password = hashed;
-        })
+            return 'x';
+        });
     }
 
     // Checks if both the username and email aren´t already registered in the DB
@@ -113,12 +120,12 @@ class RegisterUser{
     _checkUserParamsInDB(body,callback){
 
         try{
-            this._isEmailInDB(body.email, (user) => {
+            isRegistered._isEmailInDB(body.email, (user) => {
 
                 if(user.error)      return callback(user);
                 if(user != false)   return callback(false);
             
-                this._isUsernameInDB(body.username, (user) => {
+                isRegistered._isUsernameInDB(body.username, (user) => {
 
                     if(user.error)      return callback(user);
                     if(user != false)   return callback(false);
