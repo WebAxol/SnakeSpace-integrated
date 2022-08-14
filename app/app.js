@@ -12,8 +12,8 @@ import bodyParser from 'body-parser';
 // Route files
 
 import pageRoutes   from './routes/pages.js';
-import registerAPI  from './routes/apis/register.js';
-import loginAPI     from './routes/apis/login.js';
+import userAPI  from './routes/apis/user.js';
+//import loginAPI     from './routes/apis/login.js';
 
 
 
@@ -45,8 +45,8 @@ app.set('view engine','ejstrings');
 // Routes
 
 app.use(pageRoutes);
-app.use('/api/register',registerAPI);
-app.use('/api/login'   , loginAPI);
+app.use('/api/user', userAPI);
+//app.use('/api/login'   , loginAPI);
 
 
 // Public files
