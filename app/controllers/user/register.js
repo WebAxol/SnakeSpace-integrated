@@ -1,6 +1,6 @@
 'use strict'
 import User from '../../models/user.js';
-import hash from '../../utils/encrypt.js'
+import bcrypt from 'bcrypt';
 import isRegistered from './isRegistered.js';
 
 /*
@@ -16,6 +16,7 @@ class RegisterUser{
     preRegister(req,res){
 
         // TODO : clean data before processing it
+
         try{
             this._checkUserParamsInDB(req.body,(available) => {
 
@@ -33,10 +34,6 @@ class RegisterUser{
 
                 this.validatePassword(req.body.password,req.body.confirm).then((validPassword) => {
 
-                    return res.status(500).send({
-                        message : validPassword
-                    });
-
                     if(validPassword.error){
                         return res.status(500).send({
                             error : 'Error, something went wrong'
@@ -44,7 +41,6 @@ class RegisterUser{
                     }
 
                     if(validPassword){
-                        req.body.password = validPassword;
                         return this.register(req,res);
                     }
 
@@ -62,12 +58,15 @@ class RegisterUser{
         }
     }
 
-    register(req,res){
+    async register(req,res){
+
+        let hashed = await bcrypt.hash(req.body.password, 8);
+
         try{
             let newUser = new User();
                 newUser.username =  req.body.username;
                 newUser.email    =  req.body.email;
-                newUser.password =  req.body.password;
+                newUser.password =  hashed;
 
             
             newUser.save((err, userSaved) => {
@@ -98,21 +97,23 @@ class RegisterUser{
     }
 
     async validatePassword(password,confirmation){
+        try{
+            if(!password || password == '' || !confirmation || confirmation == ''){
+                return false;
+            }
+            if(password !== confirmation){
+                return false;
+            }
+            if(password.length < 10 || password.length > 250){
+                return false;
+            }
 
-        if(!password || password == '' || !confirmation || confirmation == ''){
-            return false;
-        }
-        if(password !== confirmation){
-            return false;
-        }
-        if(password.length < 10 || password.length > 250){
-            return false;
-        }
+            return true;
 
-        await hash(password).then((hashed) => {
-            console.log(hashed);
-            return 'x';
-        });
+        }catch(err){
+            console.log(err);
+            return { error : 'Could not validate password' };
+        }
     }
 
     // Checks if both the username and email aren´t already registered in the DB

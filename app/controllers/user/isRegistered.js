@@ -37,8 +37,6 @@ class isRegistered{
         }
     }
 
-
-
     isUsernameInDB(req,res){
 
         this._isUsernameInDB(req.query.username, (data) => {
@@ -55,7 +53,6 @@ class isRegistered{
     }
 
     _isUsernameInDB(username,callback){
-
 
         if(!username || username == ''){
             return callback({ error : 'No username passed as parameter', username : username });
