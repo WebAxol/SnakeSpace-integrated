@@ -56,7 +56,6 @@ class isRegistered{
 
     _isUsernameInDB(username,callback){
 
-
         if(!username || username == ''){
             return callback({ error : 'No username passed as parameter', username : username });
         }
