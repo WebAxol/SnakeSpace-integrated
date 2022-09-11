@@ -32,7 +32,7 @@ class RegisterUser{
                     });
                 }
 
-                this.validatePassword(req.body.password,req.body.confirm).then((validPassword) => {
+                this.validatePassword(req.body.password,req.body.confirmPassword).then((validPassword) => {
 
                     if(validPassword.error){
                         return res.status(500).send({
@@ -60,7 +60,7 @@ class RegisterUser{
 
     async register(req,res){
 
-        let hashed = await bcrypt.hash(password, 8);
+        let hashed = await bcrypt.hash(req.body.password, 8);
         
         try{
             let newUser = new User();
@@ -68,7 +68,6 @@ class RegisterUser{
                 newUser.email    =  req.body.email;
                 newUser.password =  hashed;
 
-            
             newUser.save((err, userSaved) => {
                 if(err){ 
                     return res.status(500).send({ 
@@ -82,10 +81,10 @@ class RegisterUser{
                 }
 
                 console.log(userSaved);
-                return res.status(200).send({ 
-                    message : userSaved}
-                );
+                res.redirect('/login');
+                res.end();
             });
+            
         }catch(err){
 
             console.log('Error', err);
@@ -98,6 +97,9 @@ class RegisterUser{
 
     async validatePassword(password,confirmation){
         try{
+
+            console.log(password,confirmation);
+
             if(!password || password == '' || !confirmation || confirmation == ''){
                 return false;
             }

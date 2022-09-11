@@ -5,13 +5,13 @@ var router = Router();
 
 // Controllers
 
-import LoginController from '../../controllers/login.js';
+import Login from '../../controllers/session/login.js';
 
 // Routes
 
-router.get('/', (req,res) => { LoginController.login(req,res) });
+router.get('/', (req,res) => { Login.login(req,res) });
 
-router.get('/check-session', (req,res) => {true
+router.get('/check', (req,res) => {true
     if(req.session.username){
         res.send({
             session : true

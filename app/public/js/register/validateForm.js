@@ -22,15 +22,13 @@ function hideErrorBox(field){
 
 function checkPassword(){
     var password = form.password.value,
-        confirm  = form.confirmPassword.valuentitye; 
-
-    // TODO : create error boxes to show error messages on UI, then remove console.log's
+        confirm  = form.confirmPassword.value; 
     
     if(password == '' || confirm == ''){
         return;
     }
 
-    if(password  !== confirm){
+    if(password !== confirm){
         console.log('unequal');
         displayErrorBox('password','The passwords are not identical');
         return false;
@@ -48,6 +46,13 @@ function checkPassword(){
     return true;
 }
 
+/*
+    TODO - Make functions DRY : IsEmailAvailable and IsUsernameAvailable have a common algorithm; it would be 
+        better to apply the Strategy pattern to simplify this into a single general function.
+
+        Note: It would be good to do the same for the backend functions. 
+    */
+
 function isEmailAvailable(){
 
     var email = form.email.value;
@@ -56,7 +61,7 @@ function isEmailAvailable(){
         return;
     }
     try{
-        fetch(`/api/register/email?email=${email}`, {
+        fetch(`/api/user/email?email=${email}`, {
             headers : {
                 'Content-type' : 'application/json'
             },
@@ -89,7 +94,7 @@ function isUsernameAvailable(){
         return;
     }
     try{
-        fetch(`/api/register/username?username=${username}`, {
+        fetch(`/api/user/name?name=${username}`, {
             headers : {
                 'Content-type' : 'application/json'
             },

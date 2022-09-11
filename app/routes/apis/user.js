@@ -13,7 +13,7 @@ import isRegistered from '../../controllers/user/isRegistered.js';
 
 router.post('/', (req,res) => { RegisterUser.preRegister(req,res); });
 router.get('/email', (req,res) => { isRegistered.isEmailInDB(req,res); });
-router.get('/username', (req,res) => { isRegistered.isUsernameInDB(req,res); });
+router.get('/name', (req,res) => { isRegistered.isUsernameInDB(req,res); });
 
 
 

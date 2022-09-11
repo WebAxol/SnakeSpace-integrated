@@ -4,6 +4,8 @@ class isRegistered{
 
     isEmailInDB(req,res){
 
+        console.log(req.query);
+
         this._isEmailInDB(req.query.email, (data) => {
             if(data.error){
                 return res.status(500).send({
@@ -41,7 +43,7 @@ class isRegistered{
 
     isUsernameInDB(req,res){
 
-        this._isUsernameInDB(req.query.username, (data) => {
+        this._isUsernameInDB(req.query.name, (data) => {
             if(data.error){
                 return res.status(500).send({
                     message : 'Error'
